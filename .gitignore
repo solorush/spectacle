@@ -19,3 +19,6 @@ DerivedData
 
 Carthage/Build
 Carthage/Checkouts
+.claude/settings.local.json
+Spectacle.dmg
+.gitignore

@@ -12,10 +12,10 @@ static const NSTrackingAreaOptions kTrackingAreaOptions = (NSTrackingMouseEntere
                                                            | NSTrackingActiveWhenFirstResponder
                                                            | NSTrackingEnabledDuringMouseDrag);
 
-static const NSEventModifierFlags kCocoaModifierFlagsMask = (NSControlKeyMask
-                                                             | NSAlternateKeyMask
-                                                             | NSShiftKeyMask
-                                                             | NSCommandKeyMask);
+static const NSEventModifierFlags kCocoaModifierFlagsMask = (NSEventModifierFlagControl
+                                                             | NSEventModifierFlagOption
+                                                             | NSEventModifierFlagShift
+                                                             | NSEventModifierFlagCommand);
 
 @implementation SpectacleShortcutRecorder
 {
@@ -142,11 +142,12 @@ static const NSEventModifierFlags kCocoaModifierFlagsMask = (NSControlKeyMask
 
 - (void)drawRect:(NSRect)rect
 {
-  CGFloat radius = NSHeight(rect) / 2.0f;
-  [self _drawBorderInRect:rect withRadius:radius];
-  [self _drawBackgroundInRect:rect withRadius:radius];
-  [self _drawBadgeInRect:rect];
-  [self _drawLabelInRect:rect];
+  NSRect bounds = self.bounds;
+  CGFloat radius = NSHeight(bounds) / 2.0f;
+  [self _drawBorderInRect:bounds withRadius:radius];
+  [self _drawBackgroundInRect:bounds withRadius:radius];
+  [self _drawBadgeInRect:bounds];
+  [self _drawLabelInRect:bounds];
 }
 
 - (void)_startRecording
@@ -198,7 +199,7 @@ static const NSEventModifierFlags kCocoaModifierFlagsMask = (NSControlKeyMask
   NSBezierPath *roundedPath = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:radius yRadius:radius];
   [NSGraphicsContext.currentContext saveGraphicsState];
   [roundedPath addClip];
-  [[NSColor windowFrameColor] set];
+  [[NSColor separatorColor] set];
   [NSBezierPath fillRect:rect];
   [NSGraphicsContext.currentContext restoreGraphicsState];
 }
@@ -311,7 +312,9 @@ static const NSEventModifierFlags kCocoaModifierFlagsMask = (NSControlKeyMask
   NSRect labelRect = rect;
   attributes[NSFontAttributeName] = [NSFont systemFontOfSize:NSFont.smallSystemFontSize];
   attributes[NSForegroundColorAttributeName] = [NSColor blackColor];
-  labelRect.origin.y = -(NSMidY(rect) - [string sizeWithAttributes:attributes].height / 2.0f);
+  CGFloat textHeight = [string sizeWithAttributes:attributes].height;
+  labelRect.origin.y = NSMidY(rect) - textHeight / 2.0f;
+  labelRect.size.height = textHeight;
   [string drawInRect:labelRect withAttributes:attributes];
 }
 
@@ -332,7 +335,7 @@ static NSMutableDictionary<NSString *, id> *stringAttributesWithShadow(void)
   NSShadow *textShadow = [NSShadow new];
   NSMutableDictionary<NSString *, id> *stringAttributes = [NSMutableDictionary new];
   paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
-  paragraphStyle.alignment = NSCenterTextAlignment;
+  paragraphStyle.alignment = NSTextAlignmentCenter;
   textShadow.shadowColor = [NSColor whiteColor];
   textShadow.shadowOffset = NSMakeSize(0.0f, -1.0);
   textShadow.shadowBlurRadius = 0.0f;
