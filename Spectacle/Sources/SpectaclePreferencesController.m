@@ -149,6 +149,8 @@ didClearExistingShortcut:(SpectacleShortcut *)shortcut
   } else {
     [SpectacleLoginItemHelper disableLoginItemForBundle:applicationBundle];
   }
+  BOOL isLoginItemEnabled = [SpectacleLoginItemHelper isLoginItemEnabledForBundle:applicationBundle];
+  self.loginItemEnabled.state = isLoginItemEnabled ? NSControlStateValueOn : NSControlStateValueOff;
 }
 
 - (IBAction)toggleStatusItem:(id)sender
